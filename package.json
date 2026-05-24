@@ -1,0 +1,26 @@
+{
+  "name": "codex-read-aloud",
+  "version": "0.1.0",
+  "description": "Read Codex and Claude Code assistant replies aloud on macOS.",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "doctor": "node scripts/doctor.mjs",
+    "test": "node --test test/*.test.mjs",
+    "validate:codex": "python3 ~/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py .",
+    "validate:claude": "node scripts/validate-claude.mjs",
+    "validate:maintainer": "npm run test && npm run validate:codex && npm run validate:claude",
+    "validate": "npm run test"
+  },
+  "keywords": [
+    "codex",
+    "claude-code",
+    "text-to-speech",
+    "accessibility",
+    "macos"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}

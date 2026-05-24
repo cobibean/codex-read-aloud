@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+npm-debug.log*
+.agent/
+.env
+.env.*
+!.env.example
+
+# Local runtime state belongs in the OS support directory, not the repo.
+config.json
+state.json
+wrapper.json
+*.mp3

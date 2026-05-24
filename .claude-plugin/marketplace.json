@@ -1,0 +1,25 @@
+{
+  "name": "codex-read-aloud",
+  "owner": {
+    "name": "Cobi"
+  },
+  "description": "Read Codex and Claude Code assistant replies aloud.",
+  "metadata": {
+    "description": "Read Codex and Claude Code assistant replies aloud."
+  },
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "codex-read-aloud",
+      "source": "./",
+      "description": "Speak assistant replies at turn end with macOS speech or OpenAI TTS.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "tags": [
+        "tts",
+        "accessibility",
+        "macos"
+      ]
+    }
+  ]
+}

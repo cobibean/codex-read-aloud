@@ -1,0 +1,36 @@
+{
+  "name": "codex-read-aloud",
+  "version": "0.1.0",
+  "description": "Reads the latest Codex assistant response aloud on macOS.",
+  "author": {
+    "name": "Cobi"
+  },
+  "homepage": "https://github.com/cobibean/codex-read-aloud",
+  "repository": "https://github.com/cobibean/codex-read-aloud",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "speech",
+    "tts",
+    "accessibility",
+    "macos"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Read Aloud",
+    "shortDescription": "Speak Codex replies when a turn finishes.",
+    "longDescription": "Codex Read Aloud installs a local notify wrapper that preserves existing Codex notifications and speaks the newest assistant response from Codex session logs using macOS speech, with optional OpenAI TTS support.",
+    "developerName": "Cobi",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Set up Codex Read Aloud.",
+      "Test Codex Read Aloud.",
+      "Turn off Codex Read Aloud."
+    ],
+    "brandColor": "#2563EB"
+  }
+}
