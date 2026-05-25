@@ -27,10 +27,15 @@ Or run it yourself:
 git clone https://github.com/cobibean/codex-read-aloud.git ~/plugins/codex-read-aloud
 cd ~/plugins/codex-read-aloud
 node scripts/setup.mjs auto
-node scripts/speak-text.mjs "Codex Read Aloud is installed."
 ```
 
 Then invoke it from a chat by asking your agent to use Codex Read Aloud, or run one of the on-demand commands below.
+
+Optional test:
+
+```bash
+node scripts/speak-text.mjs "Codex Read Aloud is installed."
+```
 
 To stop playback while it is talking:
 
@@ -45,6 +50,18 @@ node scripts/install-stop-app.mjs
 ```
 
 That creates `~/Applications/Stop Codex Read Aloud.app`, which can be launched from Spotlight, Raycast, Alfred, or bound to a hotkey in your launcher.
+
+## Emergency Cleanup For Early Installs
+
+Versions before `0.1.1` briefly experimented with automatic Codex/Claude hooks. Current versions are on-demand only. If you installed an early version and Codex or Claude starts speaking without being asked, run:
+
+```bash
+cd ~/plugins/codex-read-aloud
+git pull --ff-only
+node scripts/emergency-disable-codex-auto.mjs
+```
+
+Then fully quit and restart Codex or Claude Code. The cleanup removes stale Codex hook/cache/notify state and stops active playback. It does not remove Claude support from the repo.
 
 ## High Quality Voice
 
@@ -113,6 +130,9 @@ node scripts/set-quality.mjs openai-natural
 
 # Stop current playback.
 node scripts/stop.mjs
+
+# Disable stale auto-read state from early releases.
+node scripts/emergency-disable-codex-auto.mjs
 
 # Install a Spotlight/Raycast/Alfred-launchable stop app.
 node scripts/install-stop-app.mjs

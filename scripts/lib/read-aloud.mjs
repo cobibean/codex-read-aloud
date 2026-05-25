@@ -470,31 +470,57 @@ function stopLegacyPlayback(playback) {
     return false;
   }
 
-  const patterns = [];
+  const patterns = [
+    "codex-read-aloud-notify.mjs",
+    "claude-read-aloud-hook.mjs",
+    "afplay",
+    "say -v Sandy"
+  ];
   if (playback?.audioPath) {
-    patterns.push(escapeForPgrep(playback.audioPath));
+    patterns.push(String(playback.audioPath));
   }
   if (playback?.textNeedle) {
-    patterns.push(escapeForPgrep(playback.textNeedle));
+    patterns.push(String(playback.textNeedle));
   }
 
-  // v0.1.0 briefly used this voice automatically. Keep this fallback so users
-  // can stop stale speech from that release after upgrading.
-  patterns.push("say -v Sandy \\(English \\(US\\)\\) -r 175");
+  return stopMatchingProcesses((command) => {
+    if (command.includes("rg ") || command.includes("grep ")) {
+      return false;
+    }
+    if (command.includes("afplay") && !command.includes("codex-read-aloud")) {
+      return false;
+    }
+    return patterns.some((pattern) => command.includes(pattern));
+  });
+}
+
+function stopMatchingProcesses(matchesCommand) {
+  const result = spawnSync("ps", ["-axo", "pid=,command="], {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"]
+  });
+
+  if (result.status !== 0) {
+    return false;
+  }
 
   let stopped = false;
-  for (const pattern of patterns) {
-    const result = spawnSync("pkill", ["-f", pattern], {
-      stdio: "ignore"
-    });
-    stopped = stopped || result.status === 0;
+  for (const line of result.stdout.split(/\r?\n/)) {
+    const match = line.match(/^\s*(\d+)\s+(.+)$/);
+    if (!match) {
+      continue;
+    }
+
+    const pid = Number(match[1]);
+    const command = match[2];
+    if (pid === process.pid || !matchesCommand(command)) {
+      continue;
+    }
+
+    stopped = stopPlaybackProcess({ pid }) || stopped;
   }
 
   return stopped;
-}
-
-function escapeForPgrep(value) {
-  return String(value).replace(/[\\^$.*+?()[\]{}|]/g, "\\$&");
 }
 
 function readJson(path, fallback) {

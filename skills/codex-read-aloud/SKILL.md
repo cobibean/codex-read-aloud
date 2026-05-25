@@ -61,6 +61,12 @@ Stop current playback:
 node ~/plugins/codex-read-aloud/scripts/stop.mjs
 ```
 
+Disable stale automatic read-aloud state from early releases:
+
+```bash
+node ~/plugins/codex-read-aloud/scripts/emergency-disable-codex-auto.mjs
+```
+
 Install a launcher-friendly stop app:
 
 ```bash
@@ -74,6 +80,7 @@ node ~/plugins/codex-read-aloud/scripts/install-stop-app.mjs
 - `speak-latest-codex.mjs` reads the newest `.jsonl` file under `~/.codex/sessions`, extracts the newest assistant response, and speaks it only when invoked.
 - `speak-text.mjs` speaks text explicitly passed by an agent or user.
 - `stop.mjs` stops the current playback process started by this plugin.
+- `emergency-disable-codex-auto.mjs` removes stale Codex plugin hook/cache/notify state from early releases and stops active playback. It does not remove Claude support from the repo.
 - `install-stop-app.mjs` creates `~/Applications/Stop Codex Read Aloud.app` for Spotlight/Raycast/Alfred or launcher hotkeys.
 
 ## Configuration

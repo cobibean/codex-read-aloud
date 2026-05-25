@@ -10,6 +10,10 @@ import {
   prepareSpeechText,
   speakText
 } from "../scripts/lib/read-aloud.mjs";
+import {
+  removeCodexReadAloudBlocks,
+  restoreReadAloudNotify
+} from "../scripts/lib/codex-cleanup.mjs";
 
 test("prepareSpeechText removes markdown and code blocks by default", () => {
   const text = prepareSpeechText("## Done\n\nHere is `thing`.\n\n```js\nsecret()\n```\n\n[link](https://example.com)", {
@@ -100,4 +104,36 @@ test("buildPlaybackState preserves stop lookup hints", () => {
 
 test("install-stop-app script exists", () => {
   assert.equal(existsSync(join(import.meta.dirname, "..", "scripts", "install-stop-app.mjs")), true);
+});
+
+test("emergency cleanup script exists", () => {
+  assert.equal(existsSync(join(import.meta.dirname, "..", "scripts", "emergency-disable-codex-auto.mjs")), true);
+});
+
+test("removeCodexReadAloudBlocks removes stale plugin and hook state only", () => {
+  const input = [
+    "[plugins.\"codex-read-aloud@plugins-cli\"]\n",
+    "enabled = true\n",
+    "\n",
+    "[plugins.\"browser@openai-bundled\"]\n",
+    "enabled = true\n",
+    "\n",
+    "[hooks.state.\"codex-read-aloud@plugins-cli:hooks/hooks.json:stop:0:0\"]\n",
+    "trusted_hash = \"sha256:bad\"\n",
+    "\n",
+    "[hooks.state.\"vercel-plugin@plugins-cli:hooks/hooks.json:post_tool_use:0:0\"]\n",
+    "trusted_hash = \"sha256:good\"\n"
+  ].join("");
+
+  const result = removeCodexReadAloudBlocks(input);
+  assert.equal(result.changed, true);
+  assert.equal(result.text.includes("codex-read-aloud@plugins-cli"), false);
+  assert.equal(result.text.includes("[plugins.\"browser@openai-bundled\"]"), true);
+  assert.equal(result.text.includes("vercel-plugin@plugins-cli"), true);
+});
+
+test("restoreReadAloudNotify restores previous notify command", () => {
+  const input = "model = \"gpt-5\"\nnotify = [\"/usr/bin/env\", \"node\", \"/tmp/codex-read-aloud-notify.mjs\"]\n";
+  const output = restoreReadAloudNotify(input, ["/usr/bin/true", "turn-ended"]);
+  assert.equal(output, "model = \"gpt-5\"\nnotify = [\"/usr/bin/true\", \"turn-ended\"]\n");
 });

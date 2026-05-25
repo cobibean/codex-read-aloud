@@ -27,24 +27,29 @@ This plugin supports both Codex and Claude Code, but it must not be automatic by
 
    ```bash
    node scripts/doctor.mjs
+   ```
+
+4. Only run a speech test after the user consents to hearing audio:
+
+   ```bash
    node scripts/test-speak.mjs
    ```
 
-4. Offer OpenAI TTS only after local setup works. Tell the user not to paste their key into agent chat and to run this locally:
+5. Offer OpenAI TTS only after local setup works. Tell the user not to paste their key into agent chat and to run this locally:
 
    ```bash
    node scripts/store-openai-key.mjs
    node scripts/set-quality.mjs openai-natural
    ```
 
-5. Run:
+6. Run:
 
    ```bash
    node scripts/doctor.mjs
    npm test
    ```
 
-6. Tell the user how to invoke it on demand:
+7. Tell the user how to invoke it on demand:
 
    ```bash
    node scripts/speak-text.mjs "Text to read aloud"
@@ -63,6 +68,7 @@ This plugin supports both Codex and Claude Code, but it must not be automatic by
 - Do not edit Codex `notify` unless the user explicitly asks for automatic read-aloud.
 - Do not disable Claude support. Claude should remain able to use the plugin on demand.
 - Do not add Claude hooks unless the user explicitly asks for automatic read-aloud.
+- If an early install speaks automatically, run `node scripts/emergency-disable-codex-auto.mjs` and tell the user to fully restart Codex/Claude Code.
 - Do not claim streaming speech. This plugin speaks on demand.
 - Always tell users how to stop playback: `node scripts/stop.mjs`.
 - For users who do not want terminal commands, offer `node scripts/install-stop-app.mjs`.
@@ -79,6 +85,7 @@ node scripts/speak-text.mjs "Text to read aloud"
 node scripts/speak-latest-codex.mjs
 node scripts/stop.mjs
 node scripts/install-stop-app.mjs
+node scripts/emergency-disable-codex-auto.mjs
 node scripts/doctor.mjs
 npm test
 ```
