@@ -28,7 +28,7 @@ Speak a short test phrase:
 node ~/plugins/codex-read-aloud/scripts/speak-text.mjs "Codex Read Aloud is ready."
 ```
 
-Use a less robotic local macOS voice:
+Use the user's system-selected macOS voice:
 
 ```bash
 node ~/plugins/codex-read-aloud/scripts/set-quality.mjs macos-modern
@@ -96,7 +96,7 @@ Edit `~/Library/Application Support/codex-read-aloud/config.json`.
 Important fields:
 
 - `provider`: `macos` or `openai`
-- `voice`: macOS voice name for `say`, or `auto` to choose the best installed voice from `voicePreference`
+- `voice`: `system` for the user's system-selected voice, a macOS voice name for `say`, or `auto` to choose the best installed voice from `voicePreference`
 - `voicePreference`: ordered list of macOS voices to try when `voice` is `auto`
 - `rate`: macOS speech rate
 - `openaiVoice`: OpenAI TTS voice, such as `coral`, `sage`, `verse`, or `nova`

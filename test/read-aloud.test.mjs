@@ -116,6 +116,14 @@ test("resolveMacOSVoice chooses preferred installed voice for auto", () => {
   assert.equal(voice, "Shelley (English (US))");
 });
 
+test("resolveMacOSVoice uses system default with no voice override", () => {
+  const voice = resolveMacOSVoice("system", ["Shelley (English (US))"], [
+    { name: "Shelley (English (US))", locale: "en_US" }
+  ]);
+
+  assert.equal(voice, "");
+});
+
 test("resolveMacOSVoice preserves explicit installed voice", () => {
   const voice = resolveMacOSVoice("Samantha", ["Shelley (English (US))"], [
     { name: "Samantha", locale: "en_US" },

@@ -16,6 +16,11 @@ const preset = process.argv[2] || "macos-modern";
 const presets = {
   "macos-modern": {
     provider: "macos",
+    voice: "system",
+    rate: null
+  },
+  "macos-auto": {
+    provider: "macos",
     voice: "auto",
     voicePreference: naturalMacVoices,
     rate: 172

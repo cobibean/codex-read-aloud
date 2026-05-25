@@ -11,7 +11,7 @@ export const statePath = join(appSupportDir, "state.json");
 
 const defaultConfig = {
   provider: "macos",
-  voice: "auto",
+  voice: "system",
   voicePreference: [
     "Shelley (English (US))",
     "Sandy (English (US))",
@@ -20,7 +20,7 @@ const defaultConfig = {
     "Samantha",
     "Alex"
   ],
-  rate: 172,
+  rate: null,
   speakMode: "final",
   maxCharacters: 3000,
   includeCodeBlocks: false,
@@ -356,12 +356,16 @@ function speakWithMacOS(text, config) {
 }
 
 export function resolveMacOSVoice(voice, voicePreference = defaultConfig.voicePreference, availableVoices = listMacOSVoices()) {
-  const voiceName = String(voice || "auto");
+  const voiceName = String(voice || "system");
+  if (voiceName === "system" || voiceName === "default") {
+    return "";
+  }
+
   const preferredVoices = Array.isArray(voicePreference) ? voicePreference : defaultConfig.voicePreference;
   const availableNames = availableVoices.map((item) => item.name);
   const availableSet = new Set(availableNames);
 
-  if (voiceName !== "auto" && voiceName !== "default") {
+  if (voiceName !== "auto") {
     return availableSet.has(voiceName) ? voiceName : firstAvailableVoice(preferredVoices, availableSet) || voiceName;
   }
 

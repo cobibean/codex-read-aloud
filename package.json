@@ -1,6 +1,6 @@
 {
   "name": "codex-read-aloud",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Read Codex and Claude Code assistant replies aloud on macOS.",
   "type": "module",
   "license": "MIT",
