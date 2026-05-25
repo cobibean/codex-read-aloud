@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { stopPreviousPlayback, wrapperPath } from "./read-aloud.mjs";
@@ -12,13 +12,18 @@ export function cleanupCodexAutoRead(options = {}) {
   const now = options.now || new Date();
   const timestamp = formatTimestamp(now);
   const actions = [];
+  const configText = existsSync(codexConfigPath) ? readFileSync(codexConfigPath, "utf8") : "";
+  const staleWrapper = readStaleWrapper(runtimeWrapperPath);
+  const staleCache = cacheContainsAutoFiles(cachePath);
+  const staleConfig = configHasReadAloudNotify(configText) || configHasReadAloudHookState(configText);
+  const staleDetected = staleConfig || staleCache || Boolean(staleWrapper);
 
   if (stopPreviousPlayback()) {
     actions.push("Stopped active read-aloud playback.");
   }
 
   const codexCommand = options.codexCommand || findCodexCommand();
-  if (codexCommand && codexReadAloudPluginInstalled(codexCommand)) {
+  if (staleDetected && codexCommand && codexReadAloudPluginInstalled(codexCommand)) {
     const result = spawnSync(codexCommand, ["plugin", "remove", "codex-read-aloud@plugins-cli"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"]
@@ -28,10 +33,9 @@ export function cleanupCodexAutoRead(options = {}) {
     }
   }
 
-  if (existsSync(codexConfigPath)) {
+  if (staleConfig && existsSync(codexConfigPath)) {
     const before = readFileSync(codexConfigPath, "utf8");
-    const wrapper = readStaleWrapper(runtimeWrapperPath);
-    let after = restoreReadAloudNotify(before, wrapper?.previousNotify || []);
+    let after = restoreReadAloudNotify(before, staleWrapper?.previousNotify || []);
     after = removeCodexReadAloudBlocks(after).text;
 
     if (after !== before) {
@@ -42,13 +46,13 @@ export function cleanupCodexAutoRead(options = {}) {
     }
   }
 
-  if (existsSync(cachePath)) {
+  if (staleCache && existsSync(cachePath)) {
     const disabledPath = `${cachePath}.disabled-${timestamp}`;
     renameSync(cachePath, disabledPath);
     actions.push(`Disabled stale Codex plugin cache: ${disabledPath}`);
   }
 
-  if (staleWrapperExists(runtimeWrapperPath)) {
+  if (staleWrapper && existsSync(runtimeWrapperPath)) {
     const disabledPath = `${runtimeWrapperPath}.disabled-${timestamp}`;
     renameSync(runtimeWrapperPath, disabledPath);
     actions.push(`Disabled stale notify wrapper state: ${disabledPath}`);
@@ -105,10 +109,6 @@ function isCodexReadAloudTable(line) {
     || line.startsWith("[hooks.state.\"codex-read-aloud@");
 }
 
-function staleWrapperExists(path) {
-  return Boolean(readStaleWrapper(path));
-}
-
 function readStaleWrapper(path) {
   if (!existsSync(path)) {
     return null;
@@ -123,6 +123,48 @@ function readStaleWrapper(path) {
   } catch {
     return null;
   }
+}
+
+function cacheContainsAutoFiles(path) {
+  if (!existsSync(path)) {
+    return false;
+  }
+
+  const staleNames = new Set([
+    "hooks.json",
+    "codex-read-aloud-notify.mjs",
+    "claude-read-aloud-hook.mjs"
+  ]);
+
+  const visit = (dir) => {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return false;
+    }
+
+    for (const entry of entries) {
+      const fullPath = join(dir, entry.name);
+      if (entry.isDirectory() && visit(fullPath)) {
+        return true;
+      }
+      if (entry.isFile() && staleNames.has(entry.name)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  return visit(path);
+}
+
+function configHasReadAloudNotify(toml) {
+  return toml.includes("codex-read-aloud-notify.mjs");
+}
+
+function configHasReadAloudHookState(toml) {
+  return toml.includes("[hooks.state.\"codex-read-aloud@");
 }
 
 function toTomlStringArray(values) {

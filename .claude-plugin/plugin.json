@@ -1,6 +1,6 @@
 {
   "name": "codex-read-aloud",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Read Codex and Claude Code assistant replies aloud on demand on macOS.",
   "author": {
     "name": "Cobi"
