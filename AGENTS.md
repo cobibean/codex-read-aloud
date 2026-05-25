@@ -49,7 +49,10 @@ This plugin supports both Codex and Claude Code, but it must not be automatic by
    ```bash
    node scripts/speak-text.mjs "Text to read aloud"
    node scripts/speak-latest-codex.mjs
+   node scripts/stop.mjs
    ```
+
+   Tell the user they can ask "stop read aloud" while it is talking, and the agent should run `node scripts/stop.mjs`.
 
 ## Safety Rules
 
@@ -60,6 +63,7 @@ This plugin supports both Codex and Claude Code, but it must not be automatic by
 - Do not disable Claude support. Claude should remain able to use the plugin on demand.
 - Do not add Claude hooks unless the user explicitly asks for automatic read-aloud.
 - Do not claim streaming speech. This plugin speaks on demand.
+- Always tell users how to stop playback: `node scripts/stop.mjs`.
 - If OpenAI TTS is not configured, the plugin falls back to macOS `say`.
 
 ## Useful Commands

@@ -183,11 +183,27 @@ export async function speakText(text, config = readConfig()) {
     stopPreviousPlayback();
   }
 
-  if (config.provider === "openai") {
-    return speakWithOpenAI(cleanText, config);
+  const result = config.provider === "openai"
+    ? await speakWithOpenAI(cleanText, config)
+    : speakWithMacOS(cleanText, config);
+
+  if (result.spoken && result.playback) {
+    recordPlaybackState(result.playback);
   }
 
-  return speakWithMacOS(cleanText, config);
+  return result;
+}
+
+export function recordPlaybackState(playback) {
+  writeState(buildPlaybackState(readState(), playback));
+}
+
+export function buildPlaybackState(previousState, playback) {
+  return {
+    ...previousState,
+    playback,
+    lastPlaybackAt: new Date().toISOString()
+  };
 }
 
 export function stopPreviousPlayback() {
@@ -199,8 +215,18 @@ export function stopPreviousPlayback() {
 
   try {
     process.kill(pid, "SIGTERM");
+    writeState({
+      ...state,
+      playback: null,
+      lastStoppedAt: new Date().toISOString()
+    });
     return true;
   } catch {
+    writeState({
+      ...state,
+      playback: null,
+      lastStopAttemptAt: new Date().toISOString()
+    });
     return false;
   }
 }

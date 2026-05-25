@@ -7,13 +7,13 @@
   "metadata": {
     "description": "Read Codex and Claude Code assistant replies aloud on demand."
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "plugins": [
     {
       "name": "codex-read-aloud",
       "source": "./",
       "description": "Speak assistant replies on demand with macOS speech or OpenAI TTS.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "productivity",
       "tags": [
         "tts",

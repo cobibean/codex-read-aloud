@@ -5,6 +5,7 @@ import { join } from "node:path";
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  buildPlaybackState,
   getLatestAssistantMessage,
   prepareSpeechText,
   speakText
@@ -71,4 +72,16 @@ test("speakText dry-run reads text without auto hooks", async () => {
     process.env.CODEX_READ_ALOUD_DRY_RUN = previous;
     process.stdout.write = previousWrite;
   }
+});
+
+test("buildPlaybackState stores pid for stop command", () => {
+  const state = buildPlaybackState({ existing: true }, {
+    pid: 12345,
+    provider: "macos",
+    startedAt: "2026-01-01T00:00:00.000Z"
+  });
+
+  assert.equal(state.existing, true);
+  assert.equal(state.playback.pid, 12345);
+  assert.equal(state.playback.provider, "macos");
 });

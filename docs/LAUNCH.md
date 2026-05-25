@@ -14,7 +14,7 @@ Codex Read Aloud makes Codex and Claude Code read replies out loud on demand wit
 
 I made a tiny macOS plugin that lets Codex and Claude Code read replies aloud on demand.
 
-It does not auto-read every chat. Ask your agent to use it when you want audio, and it can use either built-in macOS voices or OpenAI TTS.
+It does not auto-read every chat. Ask your agent to use it when you want audio, stop it whenever, and use either built-in macOS voices or OpenAI TTS.
 
 Setup is meant to be agent-friendly: paste the repo link to your agent and say "set this up".
 

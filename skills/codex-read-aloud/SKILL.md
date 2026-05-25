@@ -55,12 +55,19 @@ Speak the latest detected Codex assistant response on demand:
 node ~/plugins/codex-read-aloud/scripts/speak-latest-codex.mjs
 ```
 
+Stop current playback:
+
+```bash
+node ~/plugins/codex-read-aloud/scripts/stop.mjs
+```
+
 ## Behavior
 
 - Setup does not update Codex `notify`.
 - Setup does not install Claude Code hooks.
 - `speak-latest-codex.mjs` reads the newest `.jsonl` file under `~/.codex/sessions`, extracts the newest assistant response, and speaks it only when invoked.
 - `speak-text.mjs` speaks text explicitly passed by an agent or user.
+- `stop.mjs` stops the current playback process started by this plugin.
 
 ## Configuration
 

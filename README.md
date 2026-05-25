@@ -32,6 +32,12 @@ node scripts/speak-text.mjs "Codex Read Aloud is installed."
 
 Then invoke it from a chat by asking your agent to use Codex Read Aloud, or run one of the on-demand commands below.
 
+To stop playback while it is talking:
+
+```bash
+node scripts/stop.mjs
+```
+
 ## High Quality Voice
 
 The default uses a local macOS voice and does not need an API key. For a more natural voice, store your OpenAI API key in macOS Keychain and enable OpenAI TTS.
@@ -155,6 +161,12 @@ Use Codex Read Aloud to read your answer aloud.
 ```
 
 Agents should run `node scripts/speak-text.mjs` with the text to speak, or `node scripts/speak-latest-codex.mjs` for the newest Codex response.
+
+To stop playback, agents should run:
+
+```bash
+node scripts/stop.mjs
+```
 
 See [AGENTS.md](AGENTS.md). It is written for coding agents so a user can paste the repo link and say "set this up".
 
