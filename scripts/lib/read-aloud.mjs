@@ -208,27 +208,24 @@ export function buildPlaybackState(previousState, playback) {
 
 export function stopPreviousPlayback() {
   const state = readState();
-  const pid = Number(state.playback?.pid);
-  if (!Number.isInteger(pid) || pid <= 0) {
-    return false;
-  }
+  const playback = state.playback || {};
+  const stopped = stopPlaybackProcess(playback) || stopLegacyPlayback(playback);
 
-  try {
-    process.kill(pid, "SIGTERM");
+  if (stopped) {
     writeState({
       ...state,
       playback: null,
       lastStoppedAt: new Date().toISOString()
     });
     return true;
-  } catch {
-    writeState({
-      ...state,
-      playback: null,
-      lastStopAttemptAt: new Date().toISOString()
-    });
-    return false;
   }
+
+  writeState({
+    ...state,
+    playback: null,
+    lastStopAttemptAt: new Date().toISOString()
+  });
+  return false;
 }
 
 export async function speakLatestAssistantMessage() {
@@ -342,6 +339,7 @@ function speakWithMacOS(text, config) {
     playback: {
       pid: child.pid,
       provider: "macos",
+      textNeedle: text.slice(0, 80),
       startedAt: new Date().toISOString()
     }
   };
@@ -400,6 +398,7 @@ async function speakWithOpenAI(text, config) {
         pid: child.pid,
         provider: "openai",
         audioPath,
+        textNeedle: text.slice(0, 80),
         startedAt: new Date().toISOString()
       }
     };
@@ -445,6 +444,57 @@ function warn(message) {
 
 function commandExists(command) {
   return spawnSync("which", [command], { stdio: "ignore" }).status === 0;
+}
+
+function stopPlaybackProcess(playback) {
+  const pid = Number(playback?.pid);
+  if (!Number.isInteger(pid) || pid <= 0) {
+    return false;
+  }
+
+  let stopped = false;
+  for (const target of [pid, -pid]) {
+    try {
+      process.kill(target, "SIGTERM");
+      stopped = true;
+    } catch {
+      // Try the next target. Detached children may be process-group leaders.
+    }
+  }
+
+  return stopped;
+}
+
+function stopLegacyPlayback(playback) {
+  if (process.platform !== "darwin") {
+    return false;
+  }
+
+  const patterns = [];
+  if (playback?.audioPath) {
+    patterns.push(escapeForPgrep(playback.audioPath));
+  }
+  if (playback?.textNeedle) {
+    patterns.push(escapeForPgrep(playback.textNeedle));
+  }
+
+  // v0.1.0 briefly used this voice automatically. Keep this fallback so users
+  // can stop stale speech from that release after upgrading.
+  patterns.push("say -v Sandy \\(English \\(US\\)\\) -r 175");
+
+  let stopped = false;
+  for (const pattern of patterns) {
+    const result = spawnSync("pkill", ["-f", pattern], {
+      stdio: "ignore"
+    });
+    stopped = stopped || result.status === 0;
+  }
+
+  return stopped;
+}
+
+function escapeForPgrep(value) {
+  return String(value).replace(/[\\^$.*+?()[\]{}|]/g, "\\$&");
 }
 
 function readJson(path, fallback) {

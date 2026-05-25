@@ -85,3 +85,15 @@ test("buildPlaybackState stores pid for stop command", () => {
   assert.equal(state.playback.pid, 12345);
   assert.equal(state.playback.provider, "macos");
 });
+
+test("buildPlaybackState preserves stop lookup hints", () => {
+  const state = buildPlaybackState({}, {
+    pid: 12345,
+    provider: "openai",
+    audioPath: "/tmp/codex-read-aloud-example.mp3",
+    textNeedle: "hello world"
+  });
+
+  assert.equal(state.playback.audioPath, "/tmp/codex-read-aloud-example.mp3");
+  assert.equal(state.playback.textNeedle, "hello world");
+});
