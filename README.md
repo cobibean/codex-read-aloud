@@ -65,7 +65,7 @@ Then fully quit and restart Codex or Claude Code. The cleanup removes stale Code
 
 ## High Quality Voice
 
-The default uses a local macOS voice and does not need an API key. For a more natural voice, store your OpenAI API key in macOS Keychain and enable OpenAI TTS.
+The default uses the best available local macOS voice it can find and does not need an API key. For a more natural voice, store your OpenAI API key in macOS Keychain and enable OpenAI TTS.
 
 Do not paste your OpenAI API key into agent chat. Run this locally in your terminal:
 
@@ -161,8 +161,16 @@ Default settings:
 ```json
 {
   "provider": "macos",
-  "voice": "Samantha",
-  "rate": 185,
+  "voice": "auto",
+  "voicePreference": [
+    "Shelley (English (US))",
+    "Sandy (English (US))",
+    "Flo (English (US))",
+    "Reed (English (US))",
+    "Samantha",
+    "Alex"
+  ],
+  "rate": 172,
   "speakMode": "final",
   "maxCharacters": 3000,
   "includeCodeBlocks": false,
@@ -170,12 +178,13 @@ Default settings:
 }
 ```
 
-`provider: "macos"` uses the built-in macOS `say` command. `provider: "openai"` uses OpenAI text-to-speech and is much more natural for longer replies.
+`provider: "macos"` uses the built-in macOS `say` command. `voice: "auto"` picks the first installed voice from `voicePreference`. `provider: "openai"` uses OpenAI text-to-speech and is much more natural for longer replies.
 
 ## Presets
 
 - `macos-modern`: free, local, decent Apple voice
 - `macos-calm`: free, local, alternate Apple voice
+- `macos-bright`: free, local, a little faster and clearer
 - `openai-natural`: best default OpenAI TTS preset
 - `openai-calm`: slower OpenAI TTS preset
 

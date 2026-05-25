@@ -80,6 +80,7 @@ This plugin supports both Codex and Claude Code, but it must not be automatic by
 node scripts/setup.mjs codex
 node scripts/setup.mjs claude
 node scripts/set-quality.mjs macos-modern
+node scripts/set-quality.mjs macos-calm
 node scripts/set-quality.mjs openai-natural
 node scripts/speak-text.mjs "Text to read aloud"
 node scripts/speak-latest-codex.mjs

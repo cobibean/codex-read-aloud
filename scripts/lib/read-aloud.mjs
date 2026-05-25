@@ -11,8 +11,16 @@ export const statePath = join(appSupportDir, "state.json");
 
 const defaultConfig = {
   provider: "macos",
-  voice: "Samantha",
-  rate: 185,
+  voice: "auto",
+  voicePreference: [
+    "Shelley (English (US))",
+    "Sandy (English (US))",
+    "Flo (English (US))",
+    "Reed (English (US))",
+    "Samantha",
+    "Alex"
+  ],
+  rate: 172,
   speakMode: "final",
   maxCharacters: 3000,
   includeCodeBlocks: false,
@@ -318,8 +326,9 @@ function speakWithMacOS(text, config) {
   }
 
   const args = [];
-  if (config.voice) {
-    args.push("-v", String(config.voice));
+  const voice = resolveMacOSVoice(config.voice, config.voicePreference);
+  if (voice) {
+    args.push("-v", voice);
   }
   if (config.rate) {
     args.push("-r", String(config.rate));
@@ -339,10 +348,51 @@ function speakWithMacOS(text, config) {
     playback: {
       pid: child.pid,
       provider: "macos",
+      voice,
       textNeedle: text.slice(0, 80),
       startedAt: new Date().toISOString()
     }
   };
+}
+
+export function resolveMacOSVoice(voice, voicePreference = defaultConfig.voicePreference, availableVoices = listMacOSVoices()) {
+  const voiceName = String(voice || "auto");
+  const preferredVoices = Array.isArray(voicePreference) ? voicePreference : defaultConfig.voicePreference;
+  const availableNames = availableVoices.map((item) => item.name);
+  const availableSet = new Set(availableNames);
+
+  if (voiceName !== "auto" && voiceName !== "default") {
+    return availableSet.has(voiceName) ? voiceName : firstAvailableVoice(preferredVoices, availableSet) || voiceName;
+  }
+
+  return firstAvailableVoice(preferredVoices, availableSet) || availableNames.find((name) => name) || "";
+}
+
+export function listMacOSVoices() {
+  if (process.platform !== "darwin" || !commandExists("say")) {
+    return [];
+  }
+
+  const result = spawnSync("say", ["-v", "?"], {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+    timeout: 3000
+  });
+  if (result.status !== 0) {
+    return [];
+  }
+
+  return result.stdout
+    .split(/\r?\n/)
+    .map((line) => {
+      const match = line.match(/^(.+?)\s+([a-z]{2}_[A-Z0-9]+)\s+#\s?(.*)$/);
+      return match ? { name: match[1].trim(), locale: match[2], sample: match[3] } : null;
+    })
+    .filter(Boolean);
+}
+
+function firstAvailableVoice(preferredVoices, availableSet) {
+  return preferredVoices.find((candidate) => availableSet.has(candidate)) || "";
 }
 
 async function speakWithOpenAI(text, config) {

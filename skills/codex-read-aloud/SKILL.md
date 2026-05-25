@@ -34,6 +34,12 @@ Use a less robotic local macOS voice:
 node ~/plugins/codex-read-aloud/scripts/set-quality.mjs macos-modern
 ```
 
+Use a slower local macOS voice:
+
+```bash
+node ~/plugins/codex-read-aloud/scripts/set-quality.mjs macos-calm
+```
+
 Use OpenAI TTS:
 
 ```bash
@@ -90,7 +96,8 @@ Edit `~/Library/Application Support/codex-read-aloud/config.json`.
 Important fields:
 
 - `provider`: `macos` or `openai`
-- `voice`: macOS voice name for `say`
+- `voice`: macOS voice name for `say`, or `auto` to choose the best installed voice from `voicePreference`
+- `voicePreference`: ordered list of macOS voices to try when `voice` is `auto`
 - `rate`: macOS speech rate
 - `openaiVoice`: OpenAI TTS voice, such as `coral`, `sage`, `verse`, or `nova`
 - `openaiInstructions`: style guidance sent to `gpt-4o-mini-tts`

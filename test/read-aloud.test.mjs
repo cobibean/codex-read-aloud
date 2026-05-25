@@ -8,6 +8,7 @@ import {
   buildPlaybackState,
   getLatestAssistantMessage,
   prepareSpeechText,
+  resolveMacOSVoice,
   speakText
 } from "../scripts/lib/read-aloud.mjs";
 import {
@@ -100,6 +101,28 @@ test("buildPlaybackState preserves stop lookup hints", () => {
 
   assert.equal(state.playback.audioPath, "/tmp/codex-read-aloud-example.mp3");
   assert.equal(state.playback.textNeedle, "hello world");
+});
+
+test("resolveMacOSVoice chooses preferred installed voice for auto", () => {
+  const voice = resolveMacOSVoice("auto", [
+    "Missing Voice",
+    "Shelley (English (US))",
+    "Samantha"
+  ], [
+    { name: "Samantha", locale: "en_US" },
+    { name: "Shelley (English (US))", locale: "en_US" }
+  ]);
+
+  assert.equal(voice, "Shelley (English (US))");
+});
+
+test("resolveMacOSVoice preserves explicit installed voice", () => {
+  const voice = resolveMacOSVoice("Samantha", ["Shelley (English (US))"], [
+    { name: "Samantha", locale: "en_US" },
+    { name: "Shelley (English (US))", locale: "en_US" }
+  ]);
+
+  assert.equal(voice, "Samantha");
 });
 
 test("install-stop-app script exists", () => {

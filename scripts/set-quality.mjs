@@ -1,19 +1,49 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from "node:fs";
-import { configPath, ensureRuntimeFiles, readConfig } from "./lib/read-aloud.mjs";
+import { writeFileSync } from "node:fs";
+import { configPath, ensureRuntimeFiles, readConfig, resolveMacOSVoice } from "./lib/read-aloud.mjs";
+
+const naturalMacVoices = [
+  "Shelley (English (US))",
+  "Sandy (English (US))",
+  "Flo (English (US))",
+  "Reed (English (US))",
+  "Samantha",
+  "Alex"
+];
 
 const preset = process.argv[2] || "macos-modern";
 
 const presets = {
   "macos-modern": {
     provider: "macos",
-    voice: "Samantha",
-    rate: 185
+    voice: "auto",
+    voicePreference: naturalMacVoices,
+    rate: 172
   },
   "macos-calm": {
     provider: "macos",
-    voice: "Shelley (English (US))",
-    rate: 170
+    voice: "auto",
+    voicePreference: [
+      "Shelley (English (US))",
+      "Flo (English (US))",
+      "Sandy (English (US))",
+      "Samantha",
+      "Alex"
+    ],
+    rate: 162
+  },
+  "macos-bright": {
+    provider: "macos",
+    voice: "auto",
+    voicePreference: [
+      "Sandy (English (US))",
+      "Shelley (English (US))",
+      "Flo (English (US))",
+      "Reed (English (US))",
+      "Samantha",
+      "Alex"
+    ],
+    rate: 178
   },
   "openai-natural": {
     provider: "openai",
@@ -43,3 +73,7 @@ writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
 process.stdout.write(`Applied ${preset} preset to ${configPath}\n`);
 process.stdout.write(JSON.stringify(presets[preset], null, 2));
 process.stdout.write("\n");
+
+if (config.provider === "macos") {
+  process.stdout.write(`Resolved macOS voice: ${resolveMacOSVoice(config.voice, config.voicePreference) || "system default"}\n`);
+}
