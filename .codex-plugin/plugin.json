@@ -1,7 +1,7 @@
 {
   "name": "codex-read-aloud",
   "version": "0.1.0",
-  "description": "Reads the latest Codex assistant response aloud on macOS.",
+  "description": "Reads Codex and Claude Code responses aloud on demand on macOS.",
   "author": {
     "name": "Cobi"
   },
@@ -18,8 +18,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Codex Read Aloud",
-    "shortDescription": "Speak Codex replies when a turn finishes.",
-    "longDescription": "Codex Read Aloud installs a local notify wrapper that preserves existing Codex notifications and speaks the newest assistant response from Codex session logs using macOS speech, with optional OpenAI TTS support.",
+    "shortDescription": "Speak agent replies on demand.",
+    "longDescription": "Codex Read Aloud speaks Codex and Claude Code responses only when invoked. It uses macOS speech by default and can use OpenAI TTS for higher-quality audio.",
     "developerName": "Cobi",
     "category": "Productivity",
     "capabilities": [

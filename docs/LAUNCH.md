@@ -2,7 +2,7 @@
 
 ## One-Line Pitch
 
-Codex Read Aloud makes Codex and Claude Code read their replies out loud with macOS speech or high-quality OpenAI TTS.
+Codex Read Aloud makes Codex and Claude Code read replies out loud on demand with macOS speech or high-quality OpenAI TTS.
 
 ## Who It Is For
 
@@ -12,9 +12,9 @@ Codex Read Aloud makes Codex and Claude Code read their replies out loud with ma
 
 ## Twitter/X Draft
 
-I made a tiny macOS plugin that lets Codex and Claude Code read their replies aloud.
+I made a tiny macOS plugin that lets Codex and Claude Code read replies aloud on demand.
 
-It speaks at turn end, preserves your existing Codex notify hook, and can use either built-in macOS voices or OpenAI TTS for much better audio.
+It does not auto-read every chat. Ask your agent to use it when you want audio, and it can use either built-in macOS voices or OpenAI TTS.
 
 Setup is meant to be agent-friendly: paste the repo link to your agent and say "set this up".
 

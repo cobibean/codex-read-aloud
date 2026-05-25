@@ -6,14 +6,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   getLatestAssistantMessage,
-  getClaudeHookMessage,
-  prepareSpeechText
+  prepareSpeechText,
+  speakText
 } from "../scripts/lib/read-aloud.mjs";
-import {
-  isReadAloudNotify,
-  readTopLevelNotifyConfig,
-  replaceTopLevelNotifyConfig
-} from "../scripts/lib/codex-config.mjs";
 
 test("prepareSpeechText removes markdown and code blocks by default", () => {
   const text = prepareSpeechText("## Done\n\nHere is `thing`.\n\n```js\nsecret()\n```\n\n[link](https://example.com)", {
@@ -52,41 +47,6 @@ test("getLatestAssistantMessage prefers final assistant messages", () => {
   assert.equal(message.text, "done");
 });
 
-test("getClaudeHookMessage reads last_assistant_message", () => {
-  const message = getClaudeHookMessage(JSON.stringify({
-    hook_event_name: "Stop",
-    last_assistant_message: "Here is the answer."
-  }), { includeCodeBlocks: false, maxCharacters: 1000 });
-
-  assert.equal(message.text, "Here is the answer.");
-});
-
-test("Codex notify parser preserves multiline TOML arrays", () => {
-  const config = [
-    "model = 'gpt-5.5'",
-    "notify = [",
-    "  '/usr/bin/env', # command",
-    "  'node',",
-    "  '/tmp/notifier.mjs'",
-    "]",
-    "",
-    "[mcp]",
-    "remote_mcp_client_enabled = true"
-  ].join("\n");
-
-  const parsed = readTopLevelNotifyConfig(config);
-  assert.deepEqual(parsed.value, ["/usr/bin/env", "node", "/tmp/notifier.mjs"]);
-
-  const next = replaceTopLevelNotifyConfig(config, ["/bin/echo", "ok"]);
-  assert.match(next, /^notify = \["\/bin\/echo","ok"\]/m);
-  assert.match(next, /\[mcp\]/);
-});
-
-test("isReadAloudNotify detects wrapper path", () => {
-  assert.equal(isReadAloudNotify(["/usr/bin/env", "node", "/tmp/codex-read-aloud-notify.mjs"]), true);
-  assert.equal(isReadAloudNotify(["/bin/echo", "ok"]), false);
-});
-
 test("store-openai-key ignores argv secrets", () => {
   const result = spawnSync(process.execPath, ["scripts/store-openai-key.mjs", "sk-should-not-be-used"], {
     cwd: join(import.meta.dirname, ".."),
@@ -97,4 +57,18 @@ test("store-openai-key ignores argv secrets", () => {
 
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /No API key provided/);
+});
+
+test("speakText dry-run reads text without auto hooks", async () => {
+  const previous = process.env.CODEX_READ_ALOUD_DRY_RUN;
+  const previousWrite = process.stdout.write;
+  process.env.CODEX_READ_ALOUD_DRY_RUN = "1";
+  process.stdout.write = () => true;
+  try {
+    const result = await speakText("hello", {});
+    assert.equal(result.reason, "dry-run");
+  } finally {
+    process.env.CODEX_READ_ALOUD_DRY_RUN = previous;
+    process.stdout.write = previousWrite;
+  }
 });

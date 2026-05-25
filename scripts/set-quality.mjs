@@ -7,8 +7,8 @@ const preset = process.argv[2] || "macos-modern";
 const presets = {
   "macos-modern": {
     provider: "macos",
-    voice: "Sandy (English (US))",
-    rate: 175
+    voice: "Samantha",
+    rate: 185
   },
   "macos-calm": {
     provider: "macos",

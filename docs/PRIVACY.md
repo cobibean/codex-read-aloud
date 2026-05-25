@@ -4,8 +4,8 @@ Codex Read Aloud is local-first.
 
 ## What It Reads
 
-- In Codex, it reads the newest assistant message from local Codex session JSONL files.
-- In Claude Code, it reads the `last_assistant_message` field passed to the plugin `Stop` hook.
+- In Codex, it can read the newest assistant message from local Codex session JSONL files when you run `scripts/speak-latest-codex.mjs`.
+- In Claude Code, it speaks only text the agent explicitly passes to `scripts/speak-text.mjs`.
 - It cleans Markdown before speech and omits fenced code blocks by default.
 
 ## What Leaves Your Machine

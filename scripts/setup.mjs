@@ -22,7 +22,7 @@ if (!didCodex && !didClaude) {
 }
 
 if (didCodex) {
-  run("node", [resolve(pluginRoot, "scripts", "install-notify.mjs")], "Codex notify setup failed.");
+  process.stdout.write("Codex detected. On-demand mode needs no global notify setup.\n");
 }
 
 if (didClaude) {
@@ -32,7 +32,10 @@ if (didClaude) {
 process.stdout.write("\nNext: add your OpenAI API key safely if you want the high-quality voice:\n");
 process.stdout.write("  node scripts/store-openai-key.mjs\n");
 process.stdout.write("  node scripts/set-quality.mjs openai-natural\n\n");
-process.stdout.write("Then restart Codex or Claude Code so new plugin/hook settings are loaded.\n");
+process.stdout.write("Use on demand with:\n");
+process.stdout.write("  node scripts/speak-text.mjs \"Text to read aloud\"\n");
+process.stdout.write("  node scripts/speak-latest-codex.mjs\n\n");
+process.stdout.write("This setup does not enable automatic read-aloud hooks.\n");
 
 function setupClaude() {
   if (!existsSync(resolve(pluginRoot, ".claude-plugin", "marketplace.json"))) {
@@ -63,14 +66,4 @@ function setupClaude() {
 
 function commandExists(command) {
   return spawnSync("which", [command], { stdio: "ignore" }).status === 0;
-}
-
-function run(command, args, errorMessage) {
-  const result = spawnSync(command, args, {
-    encoding: "utf8",
-    stdio: "inherit"
-  });
-  if (result.status !== 0) {
-    throw new Error(errorMessage);
-  }
 }

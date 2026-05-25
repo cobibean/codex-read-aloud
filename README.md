@@ -1,8 +1,10 @@
 # Codex Read Aloud
 
-Read Codex and Claude Code replies aloud on macOS.
+Read Codex and Claude Code replies aloud on demand on macOS.
 
-Codex Read Aloud is for people who can dictate prompts but want the agent to speak back. It speaks at turn end, uses built-in macOS voices by default, and can use OpenAI TTS for a much more natural voice.
+Codex Read Aloud is for people who can dictate prompts but want the agent to speak back when asked. It does not auto-read every chat. It uses built-in macOS voices by default and can use OpenAI TTS for a much more natural voice.
+
+This plugin is intentionally **on-demand by default**. Installing it does not register Claude hooks, change Codex `notify`, or make every chat start talking.
 
 ## Requirements
 
@@ -25,10 +27,10 @@ Or run it yourself:
 git clone https://github.com/cobibean/codex-read-aloud.git ~/plugins/codex-read-aloud
 cd ~/plugins/codex-read-aloud
 node scripts/setup.mjs auto
-node scripts/test-speak.mjs
+node scripts/speak-text.mjs "Codex Read Aloud is installed."
 ```
 
-Restart Codex or Claude Code after installing so plugin and hook settings reload.
+Then invoke it from a chat by asking your agent to use Codex Read Aloud, or run one of the on-demand commands below.
 
 ## High Quality Voice
 
@@ -43,15 +45,16 @@ node scripts/set-quality.mjs openai-natural
 
 The key is stored in Keychain under `codex-read-aloud-openai-api-key`. It is not written to this repo, Codex config, Claude settings, or a `.env` file.
 
-## Install For Codex
+## Use With Codex
 
 ```bash
 node scripts/setup.mjs codex
+node scripts/speak-latest-codex.mjs
 ```
 
-Codex setup installs a wrapper around the top-level `notify` command in `~/.codex/config.toml`. If you already have a notify command, it is preserved and chained before speech.
+Codex setup does not edit `~/.codex/config.toml`. `speak-latest-codex.mjs` is an on-demand command that reads the latest local Codex assistant message.
 
-## Install For Claude Code
+## Use With Claude Code
 
 From a local clone:
 
@@ -66,7 +69,13 @@ claude plugin marketplace add cobibean/codex-read-aloud
 claude plugin install codex-read-aloud@codex-read-aloud
 ```
 
-Claude Code setup uses the plugin `Stop` hook and reads the `last_assistant_message` hook field. No transcript parsing is needed for Claude Code.
+Claude setup installs and enables the plugin so Claude can use its skill/instructions. It does not install a `Stop` hook, so Claude will not read every response automatically. Ask Claude to use Codex Read Aloud when you want speech.
+
+Example:
+
+```text
+Use Codex Read Aloud to read that answer aloud.
+```
 
 ## Commands
 
@@ -78,11 +87,11 @@ node scripts/setup.mjs auto
 node scripts/setup.mjs codex
 node scripts/setup.mjs claude
 
-# Speak a sample sentence.
-node scripts/test-speak.mjs
+# Speak text on demand.
+node scripts/speak-text.mjs "Text to read aloud"
 
-# Print the latest detected assistant message without speaking.
-CODEX_READ_ALOUD_DRY_RUN=1 node scripts/codex-read-aloud-notify.mjs
+# Speak the latest local Codex assistant message on demand.
+node scripts/speak-latest-codex.mjs
 
 # Switch voices.
 node scripts/set-quality.mjs macos-modern
@@ -100,8 +109,6 @@ npm test
 # Run maintainer validation when Codex and Claude validators are installed.
 npm run validate:maintainer
 
-# Restore the previous Codex notify command.
-node scripts/uninstall-notify.mjs
 ```
 
 ## Configuration
@@ -117,8 +124,8 @@ Default settings:
 ```json
 {
   "provider": "macos",
-  "voice": "Sandy (English (US))",
-  "rate": 175,
+  "voice": "Samantha",
+  "rate": 185,
   "speakMode": "final",
   "maxCharacters": 3000,
   "includeCodeBlocks": false,
@@ -139,7 +146,15 @@ Default settings:
 node scripts/set-quality.mjs openai-natural
 ```
 
-## Agent Setup
+## Agent Invocation
+
+After installation, invoke it in a chat with something like:
+
+```text
+Use Codex Read Aloud to read your answer aloud.
+```
+
+Agents should run `node scripts/speak-text.mjs` with the text to speak, or `node scripts/speak-latest-codex.mjs` for the newest Codex response.
 
 See [AGENTS.md](AGENTS.md). It is written for coding agents so a user can paste the repo link and say "set this up".
 
@@ -149,4 +164,4 @@ See [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## Notes
 
-This is turn-end read aloud, not streaming speech. Codex uses the local session log plus Codex's existing notify mechanism. Claude Code uses its `Stop` hook.
+This is on-demand read aloud, not streaming speech. Codex latest-response mode reads the local session log only when you run the command.

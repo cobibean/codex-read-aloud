@@ -11,8 +11,8 @@ export const statePath = join(appSupportDir, "state.json");
 
 const defaultConfig = {
   provider: "macos",
-  voice: "Sandy (English (US))",
-  rate: 175,
+  voice: "Samantha",
+  rate: 185,
   speakMode: "final",
   maxCharacters: 3000,
   includeCodeBlocks: false,
@@ -238,56 +238,29 @@ export async function speakLatestAssistantMessage() {
   return { ...result, message };
 }
 
+export async function speakLatestCodexAssistantMessage() {
+  const config = readConfig();
+  const sessionFile = findLatestSessionFile();
+  const message = getLatestAssistantMessage(sessionFile, config);
+
+  if (!message) {
+    return { spoken: false, reason: "no-message" };
+  }
+
+  if (!message.text) {
+    return { spoken: false, reason: "empty-after-cleanup" };
+  }
+
+  const result = await speakText(message.text, config);
+  return { ...result, message };
+}
+
 export async function readStdin() {
   let input = "";
   for await (const chunk of process.stdin) {
     input += chunk;
   }
   return input;
-}
-
-export function getClaudeHookMessage(input, config = readConfig()) {
-  const payload = typeof input === "string" ? parseJson(input, {}) : input;
-  const text = typeof payload?.last_assistant_message === "string" ? payload.last_assistant_message : "";
-
-  if (!text.trim()) {
-    return null;
-  }
-
-  return {
-    key: messageKey(payload?.transcript_path || payload?.session_id || "claude", 0, text),
-    hookEventName: payload?.hook_event_name || "Stop",
-    sessionId: payload?.session_id || null,
-    rawText: text,
-    text: prepareSpeechText(text, config)
-  };
-}
-
-export async function speakClaudeHookInput(input) {
-  const config = readConfig();
-  const state = readState();
-  const message = getClaudeHookMessage(input, config);
-
-  if (!message) {
-    return { spoken: false, reason: "no-message" };
-  }
-
-  if (state.lastSpokenKey === message.key) {
-    return { spoken: false, reason: "already-spoken" };
-  }
-
-  const result = await speakText(message.text, config);
-  if (result.spoken) {
-    writeState({
-      ...state,
-      lastSpokenKey: message.key,
-      lastSpokenAt: new Date().toISOString(),
-      lastClaudeSessionId: message.sessionId,
-      playback: result.playback || state.playback || null
-    });
-  }
-
-  return { ...result, message };
 }
 
 function extractMessageText(content) {
@@ -449,20 +422,8 @@ function commandExists(command) {
 }
 
 function readJson(path, fallback) {
-  return parseJson(readFileSafe(path), fallback);
-}
-
-function readFileSafe(path) {
   try {
-    return readFileSync(path, "utf8");
-  } catch {
-    return "";
-  }
-}
-
-function parseJson(value, fallback) {
-  try {
-    return JSON.parse(value);
+    return JSON.parse(readFileSync(path, "utf8"));
   } catch {
     return fallback;
   }

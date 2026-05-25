@@ -16,22 +16,16 @@ Use this skill when the user asks for Codex text-to-speech or read-aloud behavio
 
 ## Common Tasks
 
-Install for whichever supported agent CLIs are present:
+Install for whichever supported agent CLIs are present. This must remain on-demand only; keep Claude support enabled but do not add hooks or Codex notify changes unless the user explicitly asks for automatic read-aloud.
 
 ```bash
 node ~/plugins/codex-read-aloud/scripts/setup.mjs auto
 ```
 
-Install or refresh the Codex notify wrapper:
-
-```bash
-node ~/plugins/codex-read-aloud/scripts/install-notify.mjs
-```
-
 Speak a short test phrase:
 
 ```bash
-node ~/plugins/codex-read-aloud/scripts/test-speak.mjs
+node ~/plugins/codex-read-aloud/scripts/speak-text.mjs "Codex Read Aloud is ready."
 ```
 
 Use a less robotic local macOS voice:
@@ -53,25 +47,20 @@ Install Claude Code integration:
 node ~/plugins/codex-read-aloud/scripts/setup.mjs claude
 ```
 
-Dry-run the latest detected assistant response:
+Claude support means the plugin skill is available and Claude can run the on-demand speech scripts when asked. It does not mean every Claude response should be spoken automatically.
+
+Speak the latest detected Codex assistant response on demand:
 
 ```bash
-CODEX_READ_ALOUD_DRY_RUN=1 node ~/plugins/codex-read-aloud/scripts/codex-read-aloud-notify.mjs
-```
-
-Disable and restore the previous Codex notify command:
-
-```bash
-node ~/plugins/codex-read-aloud/scripts/uninstall-notify.mjs
+node ~/plugins/codex-read-aloud/scripts/speak-latest-codex.mjs
 ```
 
 ## Behavior
 
-- The installer updates the top-level `notify` array in `~/.codex/config.toml`.
-- The previous `notify` command is stored and chained first, so existing Codex behavior such as Computer Use turn-ended notifications is preserved.
-- The wrapper reads the newest `.jsonl` file under `~/.codex/sessions`, extracts the newest assistant response, and speaks it with macOS `say` by default.
-- Claude Code uses the plugin `Stop` hook and the `last_assistant_message` hook input field.
-- Restart Codex after install or uninstall so the app reloads `~/.codex/config.toml`.
+- Setup does not update Codex `notify`.
+- Setup does not install Claude Code hooks.
+- `speak-latest-codex.mjs` reads the newest `.jsonl` file under `~/.codex/sessions`, extracts the newest assistant response, and speaks it only when invoked.
+- `speak-text.mjs` speaks text explicitly passed by an agent or user.
 
 ## Configuration
 

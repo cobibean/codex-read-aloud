@@ -4,7 +4,9 @@ Use this file when a user gives you this repository link and says "set this up".
 
 ## Goal
 
-Install Codex Read Aloud so Codex and/or Claude Code reads assistant replies aloud at turn end. Keep setup simple and do not expose the user's OpenAI API key.
+Install Codex Read Aloud so Codex and/or Claude Code can read assistant replies aloud on demand. Keep setup simple and do not expose the user's OpenAI API key.
+
+This plugin supports both Codex and Claude Code, but it must not be automatic by default. Keep the Claude plugin installed/enabled so the skill is available. Do not add Claude hooks, watchers, or Codex `notify` changes unless the user explicitly asks for automatic read-aloud.
 
 ## Fast Path
 
@@ -42,15 +44,22 @@ Install Codex Read Aloud so Codex and/or Claude Code reads assistant replies alo
    npm test
    ```
 
-6. Tell the user to restart Codex or Claude Code so plugin and hook settings reload.
+6. Tell the user how to invoke it on demand:
+
+   ```bash
+   node scripts/speak-text.mjs "Text to read aloud"
+   node scripts/speak-latest-codex.mjs
+   ```
 
 ## Safety Rules
 
 - Never paste, print, commit, or store the user's OpenAI API key in repo files.
 - Do not ask the user to paste an OpenAI API key into chat.
 - Prefer macOS Keychain for the key.
-- Do not delete an existing Codex `notify` command. The installer stores and chains it.
-- Do not claim streaming speech. This plugin speaks at turn end.
+- Do not edit Codex `notify` unless the user explicitly asks for automatic read-aloud.
+- Do not disable Claude support. Claude should remain able to use the plugin on demand.
+- Do not add Claude hooks unless the user explicitly asks for automatic read-aloud.
+- Do not claim streaming speech. This plugin speaks on demand.
 - If OpenAI TTS is not configured, the plugin falls back to macOS `say`.
 
 ## Useful Commands
@@ -60,6 +69,8 @@ node scripts/setup.mjs codex
 node scripts/setup.mjs claude
 node scripts/set-quality.mjs macos-modern
 node scripts/set-quality.mjs openai-natural
+node scripts/speak-text.mjs "Text to read aloud"
+node scripts/speak-latest-codex.mjs
 node scripts/stop.mjs
 node scripts/doctor.mjs
 npm test

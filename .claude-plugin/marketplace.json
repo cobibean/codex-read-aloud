@@ -3,16 +3,16 @@
   "owner": {
     "name": "Cobi"
   },
-  "description": "Read Codex and Claude Code assistant replies aloud.",
+  "description": "Read Codex and Claude Code assistant replies aloud on demand.",
   "metadata": {
-    "description": "Read Codex and Claude Code assistant replies aloud."
+    "description": "Read Codex and Claude Code assistant replies aloud on demand."
   },
   "version": "0.1.0",
   "plugins": [
     {
       "name": "codex-read-aloud",
       "source": "./",
-      "description": "Speak assistant replies at turn end with macOS speech or OpenAI TTS.",
+      "description": "Speak assistant replies on demand with macOS speech or OpenAI TTS.",
       "version": "0.1.0",
       "category": "productivity",
       "tags": [
