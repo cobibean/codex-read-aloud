@@ -1,4 +1,4 @@
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -96,4 +96,8 @@ test("buildPlaybackState preserves stop lookup hints", () => {
 
   assert.equal(state.playback.audioPath, "/tmp/codex-read-aloud-example.mp3");
   assert.equal(state.playback.textNeedle, "hello world");
+});
+
+test("install-stop-app script exists", () => {
+  assert.equal(existsSync(join(import.meta.dirname, "..", "scripts", "install-stop-app.mjs")), true);
 });

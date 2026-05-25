@@ -38,6 +38,14 @@ To stop playback while it is talking:
 node scripts/stop.mjs
 ```
 
+For a non-terminal stop button on macOS:
+
+```bash
+node scripts/install-stop-app.mjs
+```
+
+That creates `~/Applications/Stop Codex Read Aloud.app`, which can be launched from Spotlight, Raycast, Alfred, or bound to a hotkey in your launcher.
+
 ## High Quality Voice
 
 The default uses a local macOS voice and does not need an API key. For a more natural voice, store your OpenAI API key in macOS Keychain and enable OpenAI TTS.
@@ -106,6 +114,9 @@ node scripts/set-quality.mjs openai-natural
 # Stop current playback.
 node scripts/stop.mjs
 
+# Install a Spotlight/Raycast/Alfred-launchable stop app.
+node scripts/install-stop-app.mjs
+
 # Check setup.
 node scripts/doctor.mjs
 
@@ -167,6 +178,14 @@ To stop playback, agents should run:
 ```bash
 node scripts/stop.mjs
 ```
+
+For users who want a quick stop action outside chat, agents should offer:
+
+```bash
+node scripts/install-stop-app.mjs
+```
+
+Then the user can launch `Stop Codex Read Aloud` from Spotlight/Raycast/Alfred or bind it to a launcher hotkey.
 
 See [AGENTS.md](AGENTS.md). It is written for coding agents so a user can paste the repo link and say "set this up".
 

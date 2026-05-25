@@ -61,6 +61,12 @@ Stop current playback:
 node ~/plugins/codex-read-aloud/scripts/stop.mjs
 ```
 
+Install a launcher-friendly stop app:
+
+```bash
+node ~/plugins/codex-read-aloud/scripts/install-stop-app.mjs
+```
+
 ## Behavior
 
 - Setup does not update Codex `notify`.
@@ -68,6 +74,7 @@ node ~/plugins/codex-read-aloud/scripts/stop.mjs
 - `speak-latest-codex.mjs` reads the newest `.jsonl` file under `~/.codex/sessions`, extracts the newest assistant response, and speaks it only when invoked.
 - `speak-text.mjs` speaks text explicitly passed by an agent or user.
 - `stop.mjs` stops the current playback process started by this plugin.
+- `install-stop-app.mjs` creates `~/Applications/Stop Codex Read Aloud.app` for Spotlight/Raycast/Alfred or launcher hotkeys.
 
 ## Configuration
 

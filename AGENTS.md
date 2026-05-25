@@ -50,9 +50,10 @@ This plugin supports both Codex and Claude Code, but it must not be automatic by
    node scripts/speak-text.mjs "Text to read aloud"
    node scripts/speak-latest-codex.mjs
    node scripts/stop.mjs
+   node scripts/install-stop-app.mjs
    ```
 
-   Tell the user they can ask "stop read aloud" while it is talking, and the agent should run `node scripts/stop.mjs`.
+   Tell the user they can ask "stop read aloud" while it is talking, and the agent should run `node scripts/stop.mjs`. For a non-terminal stop action, offer `node scripts/install-stop-app.mjs`; it creates `~/Applications/Stop Codex Read Aloud.app` for Spotlight/Raycast/Alfred or launcher hotkeys.
 
 ## Safety Rules
 
@@ -64,6 +65,7 @@ This plugin supports both Codex and Claude Code, but it must not be automatic by
 - Do not add Claude hooks unless the user explicitly asks for automatic read-aloud.
 - Do not claim streaming speech. This plugin speaks on demand.
 - Always tell users how to stop playback: `node scripts/stop.mjs`.
+- For users who do not want terminal commands, offer `node scripts/install-stop-app.mjs`.
 - If OpenAI TTS is not configured, the plugin falls back to macOS `say`.
 
 ## Useful Commands
@@ -76,6 +78,7 @@ node scripts/set-quality.mjs openai-natural
 node scripts/speak-text.mjs "Text to read aloud"
 node scripts/speak-latest-codex.mjs
 node scripts/stop.mjs
+node scripts/install-stop-app.mjs
 node scripts/doctor.mjs
 npm test
 ```
